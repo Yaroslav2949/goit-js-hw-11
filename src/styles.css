@@ -16,6 +16,8 @@ body {
   clip-path: inset(100%);
 }
 
+
+
 img {
   display: block;
   max-width: 100%;
@@ -31,6 +33,8 @@ input {
   border: none;
   border-radius: 5px;
 }
+
+
 button {
   width: 140px;
   height: 40px;
