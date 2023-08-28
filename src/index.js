@@ -11,7 +11,7 @@ const paramsForNotify = {
 };
 const perPage = 40;
 let page = 1;
-let keyOfSearchPhoto = '';
+let query = '';
 
 btnLoadMore.classList.add('is-hidden');
 
@@ -24,16 +24,18 @@ async function onSubmitForm(event) {
   page = 1;
   const { searchQuery } = event.currentTarget.elements;
   //   console.log (searchQuery)
-  keyOfSearchPhoto = searchQuery.value.trim().toLowerCase();
+  query = searchQuery.value.trim().toLowerCase();
 
-  if (keyOfSearchPhoto === '') {
+  if (query === '') {
+
+    btnLoadMore.classList.add('is-hidden');
     Notify.info('Enter your request, please!', paramsForNotify);
     return;
   }
 
-  //   console.log(keyOfSearchPhoto);
+  //   console.log(query);
 
-  const response = await fetchPhoto(keyOfSearchPhoto, page, perPage);
+  const response = await fetchPhoto(query, page, perPage);
 
   const searchResults = response.hits;
 
@@ -44,15 +46,14 @@ async function onSubmitForm(event) {
         paramsForNotify
       );
     } else {
+      createMarkup(searchResults);
+      lightbox.refresh();
       Notify.info(
         `Hooray! We found ${response.totalHits} images.`,
         paramsForNotify
       );
 
       // console.log(searchResults);
-
-      createMarkup(searchResults);
-      lightbox.refresh();
     }
 
     if (response.totalHits > perPage) {
@@ -65,24 +66,26 @@ async function onSubmitForm(event) {
   }
 
   searchForm.reset();
+
 }
 
 btnLoadMore.addEventListener('click', onClickLoadMore);
 async function onClickLoadMore() {
   page += 1;
-  const response = await fetchPhoto(keyOfSearchPhoto, page, perPage);
+  const response = await fetchPhoto(query, page, perPage);
 
   const searchResults = response.hits;
   const numberOfPage = Math.ceil(response.totalHits / perPage);
 
   createMarkup(searchResults);
-  if (page === numberOfPage) {
+  if (page >= numberOfPage) {
     btnLoadMore.classList.add('is-hidden');
     Notify.info(
       "We're sorry, but you've reached the end of search results.",
       paramsForNotify
     );
   }
+
   lightbox.refresh();
   scrollPage();
 }
@@ -104,3 +107,4 @@ function scrollPage() {
     behavior: 'smooth',
   });
 }
+
