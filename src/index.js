@@ -9,6 +9,7 @@ const paramsForNotify = {
   position: 'center-center',
   timeout: 2500,
 };
+const hideBtnLoadMore = () => (refs.btnLoadMore.style.display = 'none');
 const perPage = 40;
 let page = 1;
 let query = '';
@@ -27,10 +28,10 @@ async function onSubmitForm(event) {
   query = searchQuery.value.trim().toLowerCase();
 
   if (query === '') {
-
-    btnLoadMore.classList.add('is-hidden');
     Notify.info('Enter your request, please!', paramsForNotify);
     return;
+  } else {
+    refs.btnLoadMore.style.display = 'none';
   }
 
   //   console.log(query);
@@ -66,24 +67,25 @@ async function onSubmitForm(event) {
   }
 
   searchForm.reset();
-
 }
 
 btnLoadMore.addEventListener('click', onClickLoadMore);
 async function onClickLoadMore() {
   page += 1;
   const response = await fetchPhoto(query, page, perPage);
-
-  const searchResults = response.hits;
-  const numberOfPage = Math.ceil(response.totalHits / perPage);
-
-  createMarkup(searchResults);
-  if (page >= numberOfPage) {
-    btnLoadMore.classList.add('is-hidden');
-    Notify.info(
-      "We're sorry, but you've reached the end of search results.",
-      paramsForNotify
-    );
+  try {
+    const searchResults = response.hits;
+    const numberOfPage = Math.ceil(response.totalHits / perPage);
+    if (page >= numberOfPage) {
+      btnLoadMore.classList.add('is-hidden');
+      Notify.info(
+        "We're sorry, but you've reached the end of search results.",
+        paramsForNotify
+      );
+    }
+    createMarkup(searchResults);
+  } catch (error) {
+    onFetchError();
   }
 
   lightbox.refresh();
@@ -107,4 +109,3 @@ function scrollPage() {
     behavior: 'smooth',
   });
 }
-
