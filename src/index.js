@@ -9,16 +9,16 @@ const paramsForNotify = {
   position: 'center-center',
   timeout: 2500,
 };
-const hideBtnLoadMore = () => (refs.btnLoadMore.style.display = 'none');
+
 const perPage = 40;
 let page = 1;
 let query = '';
 
-btnLoadMore.classList.add('is-hidden');
-
 searchForm.addEventListener('submit', onSubmitForm);
+refs.btnLoadMore.style.display = 'none';
 
 async function onSubmitForm(event) {
+  refs.btnLoadMore.style.display = 'none';
   event.preventDefault();
 
   gallery.innerHTML = '';
@@ -30,8 +30,6 @@ async function onSubmitForm(event) {
   if (query === '') {
     Notify.info('Enter your request, please!', paramsForNotify);
     return;
-  } else {
-    refs.btnLoadMore.style.display = 'none';
   }
 
   //   console.log(query);
@@ -58,7 +56,7 @@ async function onSubmitForm(event) {
     }
 
     if (response.totalHits > perPage) {
-      btnLoadMore.classList.remove('is-hidden');
+      refs.btnLoadMore.style.display = 'flex';
     }
 
     scrollPage();
@@ -77,7 +75,7 @@ async function onClickLoadMore() {
     const searchResults = response.hits;
     const numberOfPage = Math.ceil(response.totalHits / perPage);
     if (page >= numberOfPage) {
-      btnLoadMore.classList.add('is-hidden');
+      refs.btnLoadMore.style.display = 'none';
       Notify.info(
         "We're sorry, but you've reached the end of search results.",
         paramsForNotify
